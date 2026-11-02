@@ -1,12 +1,12 @@
 {
-  "compilerOptions": { // typescript settings
-    "target": "ES2023", // modern node syntax
-    "module": "ESNext", // native imports
-    "moduleResolution": "bundler", // allows imports without file extensions
-    "strict": true, // strict type checks
-    "noEmit": true, // type check only, no build output
-    "skipLibCheck": true, // skip checking package types
-    "types": ["node", "@wdio/globals/types", "@wdio/mocha-framework", "expect-webdriverio"] // global types
+  "compilerOptions": {
+    "target": "ES2023",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "types": ["node", "@wdio/globals/types", "@wdio/mocha-framework", "expect-webdriverio"]
   },
-  "include": ["pages", "tests", "utils", "*.ts"] // files to check
+  "include": ["pages", "tests", "utils", "*.ts"]
 }

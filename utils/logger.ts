@@ -1,3 +1,4 @@
-import logger from '@wdio/logger'; // webdriverio's logging library
+import logger from '@wdio/logger';
 
-export default logger('solflare'); // our log lines are tagged solflare
+// Logger for test actions. wdio.conf.ts turns on the "solflare" name.
+export default logger('solflare');

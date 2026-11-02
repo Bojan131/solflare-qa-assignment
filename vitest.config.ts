@@ -1,9 +1,11 @@
-import { defineConfig } from 'vitest/config'; // vitest config helper
+import { defineConfig } from 'vitest/config';
 
-export default defineConfig({ // vitest settings
-  test: { // test options
-    include: ['tests/api/**/*.test.ts'], // where api tests live
-    testTimeout: 30000, // the live api can be slow
-    reporters: ['default', ['html', { outputDir: 'reports/api' }]], // console and html report
+// Runs the API tests only. E2E tests run through WebdriverIO.
+export default defineConfig({
+  test: {
+    include: ['tests/api/**/*.test.ts'],
+    // The API is live, so give it time to answer
+    testTimeout: 30000,
+    reporters: ['default', ['html', { outputDir: 'reports/api' }]],
   },
 });

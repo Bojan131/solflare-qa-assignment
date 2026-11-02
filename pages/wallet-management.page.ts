@@ -1,41 +1,41 @@
-import { $, $$ } from '@wdio/globals'; // finds elements
-import log from '../utils/logger'; // action logger
-import Page from './page'; // shared page helpers
+import { $, $$ } from '@wdio/globals';
+import log from '../utils/logger';
+import Page from './page';
 
-const SECTION = '[data-testid="section-Recovery phrase"]'; // recovery phrase part of the panel
+const SECTION = '[data-testid="section-Recovery phrase"]';
 
-class WalletManagementPage extends Page { // my wallets panel
-  get avatar() { return $('[data-testid="wallet-picker-avatar"]'); } // avatar in the header
-  get walletNames() { return $$(`${SECTION} [data-testid="text-wallet-name"]`); } // listed names
-  get walletRows() { return $$(`${SECTION} [data-testid^="li-wallets-"]`); } // listed wallets
-  // three dots next to the label
+// My wallets panel, opened from the avatar in the header
+class WalletManagementPage extends Page {
+  get avatar() { return $('[data-testid="wallet-picker-avatar"]'); }
+  get walletNames() { return $$(`${SECTION} [data-testid="text-wallet-name"]`); }
+  get walletRows() { return $$(`${SECTION} [data-testid^="li-wallets-"]`); }
   get optionsButton() { return $(`${SECTION} [data-testid="icon-btn-wallet-section-options"]`); }
-  get showOrHideItem() { return $('[data-testid="li-recovery-phrase-show-or-hide"]'); } // menu item
+  get showOrHideItem() { return $('[data-testid="li-recovery-phrase-show-or-hide"]'); }
 
-  walletRow(address: string) { // finds one wallet in the list
-    return $(`${SECTION} [data-testid="li-wallets-${address}"]`); // row for that address
+  walletRow(address: string) {
+    return $(`${SECTION} [data-testid="li-wallets-${address}"]`);
   }
 
-  async clickAvatar() { // opens the panel
-    log.info('click avatar'); // record the action
-    await this.avatar.click(); // click the avatar
+  async clickAvatar() {
+    log.info('click avatar');
+    await this.avatar.click();
   }
 
-  async clickOptions() { // opens the recovery phrase menu
-    log.info('click recovery phrase options'); // record the action
-    await this.optionsButton.click(); // click three dots
+  async clickOptions() {
+    log.info('click recovery phrase options');
+    await this.optionsButton.click();
   }
 
-  async clickShowOrHide() { // opens the wallet toggles
-    log.info('click show or hide wallets'); // record the action
-    await this.showOrHideItem.click(); // click show or hide wallets
+  async clickShowOrHide() {
+    log.info('click show or hide wallets');
+    await this.showOrHideItem.click();
   }
 
-  async getWalletAddresses() { // reads addresses from the list
-    // each test id holds an address
+  async getWalletAddresses() {
+    // Each row's test ID ends with the wallet's address
     const testIds = await this.walletRows.map((row) => row.getAttribute('data-testid'));
-    return testIds.map((testId) => testId!.replace('li-wallets-', '')); // keep only the address
+    return testIds.map((testId) => testId!.replace('li-wallets-', ''));
   }
 }
 
-export default new WalletManagementPage(); // one shared instance
+export default new WalletManagementPage();

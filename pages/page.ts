@@ -1,14 +1,15 @@
-import { browser } from '@wdio/globals'; // webdriverio browser object
-import log from '../utils/logger'; // action logger
+import { browser } from '@wdio/globals';
+import log from '../utils/logger';
 
-export default class Page { // shared by all page objects
-  async open(path: string) { // opens a path on the site
-    log.info(`open ${path}`); // record the action
-    await browser.url(path); // path is relative to baseUrl
+// Base class for the page objects, as the WebdriverIO docs recommend
+export default class Page {
+  async open(path: string) {
+    log.info(`open ${path}`);
+    await browser.url(path);
   }
 
-  async reload() { // reloads the current page
-    log.info('reload page'); // record the action
-    await browser.refresh(); // reload it
+  async reload() {
+    log.info('reload page');
+    await browser.refresh();
   }
 }

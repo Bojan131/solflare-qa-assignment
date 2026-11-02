@@ -1,49 +1,52 @@
-import { $ } from '@wdio/globals'; // finds elements
-import log from '../utils/logger'; // action logger
-import Page from './page'; // shared page helpers
+import { $ } from '@wdio/globals';
+import log from '../utils/logger';
+import Page from './page';
 
-class OnboardingPage extends Page { // onboarding screens
-  get getStartedButton() { return $('[data-testid="btn-get-started"]'); } // first screen button
-  get createWalletButton() { return $('[data-testid="btn-manual-create"]'); } // second screen
-  get passwordInput() { return $('[data-testid="input-new-password"]'); } // first field
-  get repeatPasswordInput() { return $('[data-testid="input-repeat-password"]'); } // second field
-  // terms tick box, the inner label of the terms row
+// Onboarding screens, from the first page to the password form
+class OnboardingPage extends Page {
+  get getStartedButton() { return $('[data-testid="btn-get-started"]'); }
+  get createWalletButton() { return $('[data-testid="btn-manual-create"]'); }
+  get passwordInput() { return $('[data-testid="input-new-password"]'); }
+  get repeatPasswordInput() { return $('[data-testid="input-repeat-password"]'); }
+  // The input is 1x1 and the outer label's centre is the Terms of Service link,
+  // so the inner label is the only safe place to click
   get termsCheckbox() { return $('[data-key="onboard-term-and-conditions-check"] label'); }
-  get continueButton() { return $('[data-testid="btn-continue"]'); } // submits the form
+  get continueButton() { return $('[data-testid="btn-continue"]'); }
 
-  async openOnboarding() { // opens the first screen
-    await this.open('/onboard'); // go to onboarding
+  async openOnboarding() {
+    await this.open('/onboard');
   }
 
-  async clickGetStarted() { // leaves the first screen
-    log.info('click get started'); // record the action
-    await this.getStartedButton.click(); // click get started
+  async clickGetStarted() {
+    log.info('click get started');
+    await this.getStartedButton.click();
   }
 
-  async clickCreateWallet() { // chooses a new wallet
-    log.info('click create new wallet'); // record the action
-    await this.createWalletButton.click(); // click create new wallet
+  async clickCreateWallet() {
+    log.info('click create new wallet');
+    await this.createWalletButton.click();
   }
 
-  async enterPassword(password: string) { // fills the first field
-    log.info('enter password'); // never logs the value
-    await this.passwordInput.setValue(password, { mask: true }); // type it, hidden from logs
+  async enterPassword(password: string) {
+    log.info('enter password');
+    // Masked so the password stays out of the logs
+    await this.passwordInput.setValue(password, { mask: true });
   }
 
-  async repeatPassword(password: string) { // fills the second field
-    log.info('repeat password'); // never logs the value
-    await this.repeatPasswordInput.setValue(password, { mask: true }); // type it, hidden from logs
+  async repeatPassword(password: string) {
+    log.info('repeat password');
+    await this.repeatPasswordInput.setValue(password, { mask: true });
   }
 
-  async acceptTerms() { // ticks the terms box
-    log.info('accept terms'); // record the action
-    await this.termsCheckbox.click(); // tick the box
+  async acceptTerms() {
+    log.info('accept terms');
+    await this.termsCheckbox.click();
   }
 
-  async clickContinue() { // submits the form
-    log.info('click continue'); // record the action
-    await this.continueButton.click(); // click continue
+  async clickContinue() {
+    log.info('click continue');
+    await this.continueButton.click();
   }
 }
 
-export default new OnboardingPage(); // one shared instance
+export default new OnboardingPage();

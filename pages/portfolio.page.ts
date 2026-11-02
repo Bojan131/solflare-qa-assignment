@@ -1,8 +1,9 @@
-import { $ } from '@wdio/globals'; // finds elements
-import Page from './page'; // shared page helpers
+import { $ } from '@wdio/globals';
+import Page from './page';
 
-class PortfolioPage extends Page { // main page after creating a wallet
-  get balancePanel() { return $('[data-testid="section-portfolio-hero"]'); } // balance panel
+// Main page, shown after a wallet is created
+class PortfolioPage extends Page {
+  get balancePanel() { return $('[data-testid="section-portfolio-hero"]'); }
 }
 
-export default new PortfolioPage(); // one shared instance
+export default new PortfolioPage();
