@@ -3,8 +3,11 @@ import log from '../utils/logger'; // action logger
 import Page from './page'; // shared page helpers
 
 class OnboardingPage extends Page { // onboarding screens
+  get logo() { return $('img[alt="Solflare logo"]'); } // solflare logo
   get getStartedButton() { return $('[data-testid="btn-get-started"]'); } // first screen button
+  get importWalletButton() { return $('[data-testid="btn-import-existing-wallet"]'); } // import
   get createWalletButton() { return $('[data-testid="btn-manual-create"]'); } // second screen
+  get googleButton() { return $('[data-testid="btn-continue-with-google"]'); } // google sign in
   get passwordInput() { return $('[data-testid="input-new-password"]'); } // first field
   get repeatPasswordInput() { return $('[data-testid="input-repeat-password"]'); } // second field
   get termsCheckbox() { return $('label[data-id="checkbox"]'); } // terms tick box

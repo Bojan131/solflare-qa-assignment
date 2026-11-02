@@ -2,7 +2,7 @@
 
 WebdriverIO E2E test and API tests for the Solflare wallet. API tests are still being added.
 
-The E2E test creates a new wallet, turns on the 3rd and 4th wallets under Show or hide wallets, saves, and checks that the recovery phrase list holds the original wallet and those two. Every step is in [docs/test-case.md](docs/test-case.md).
+The E2E test creates a new wallet, turns on the 3rd and 4th wallets under Show or hide wallets, saves, and checks that the recovery phrase list holds the original wallet and those two, including after a page reload. Every step is in [docs/test-case.md](docs/test-case.md).
 
 ## Requirements
 
