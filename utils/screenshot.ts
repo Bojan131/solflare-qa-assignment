@@ -9,7 +9,5 @@ export async function takeFailureScreenshot(testTitle: string) { // saves the fa
   const browserName = browser.capabilities.browserName; // chrome or firefox
   const path = `screenshots/${browserName}-${safeTitle}-${timestamp}.png`; // where it goes
   await browser.saveScreenshot(path); // save the screenshot
-  // records the page state for debugging
-  log.error(`failed on ${await browser.getUrl()}, title "${await browser.getTitle()}"`);
   log.info(`saved failure screenshot: ${path}`); // record where it went
 }

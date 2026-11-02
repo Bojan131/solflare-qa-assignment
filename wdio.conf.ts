@@ -1,3 +1,4 @@
+import { logPageState } from './utils/page-state'; // logs what a failed page showed
 import { takeFailureScreenshot } from './utils/screenshot'; // saves failure screenshots
 
 const SUPPORTED_BROWSERS = ['chrome', 'firefox']; // browsers we run on
@@ -29,6 +30,8 @@ export const config: WebdriverIO.Config = { // webdriverio settings
     await browser.setWindowSize(1440, 900); // same layout in every browser
   },
   afterTest: async (test, _context, { passed }) => { // runs after each test
-    if (!passed) await takeFailureScreenshot(test.title); // screenshot on failure
+    if (passed) return; // nothing to record
+    await logPageState(); // log what the page showed
+    await takeFailureScreenshot(test.title); // screenshot on failure
   },
 };

@@ -43,6 +43,6 @@ Counting three rows would pass even if the wrong wallets were saved. The test re
 
 ## Not covered
 
-- Chrome headless, which solflare.com blocks.
+- A passing Chrome headless run. The script exists, but solflare.com blocks it, so it fails at step 2.
 - Password rules and other negative cases. The brief asks for one test.
 - Google sign-in and importing a wallet.
