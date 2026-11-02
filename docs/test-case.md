@@ -1,48 +1,37 @@
-# E2E test case
+# TC-01: Recovery phrase list shows newly added wallets
 
-**ID:** E2E-01
-**Title:** Shows the two new wallets in the recovery phrase list after saving
-**Priority:** High. Losing track of wallets is one of the biggest risks in a wallet app.
-**Spec:** `tests/e2e/manage-wallets.e2e.ts`
+| Field | Value |
+|---|---|
+| Test case ID | TC-01 |
+| Module | Wallet management |
+| Description | Verify that wallets turned on in Show or hide wallets appear in the recovery phrase list |
+| Requirement | Technical assignment, task 1 |
+| Priority | High |
+| Test type | Functional, E2E |
+| Automation | Automated in `tests/e2e/manage-wallets.e2e.ts` |
+| Environment | Production, https://solflare.com |
+| Browsers | Chrome and Firefox, latest stable |
+| Preconditions | Clean browser session with no wallet |
+| Test data | Any valid password |
 
-## Preconditions
+## Test steps
 
-- A clean browser session, so every run creates a new wallet.
-- No stored credentials. The test generates its own password.
+1. Go to https://solflare.com/onboard
+2. Click Get started
+3. Click Create new wallet
+4. Enter a password
+5. Enter the same password in the second field
+6. Accept the Terms of Service and Privacy Policy
+7. Click Continue
+8. Click the avatar in the header to open Wallet management
+9. Verify that Main Wallet is displayed
+10. Click the three dots next to Recovery phrase
+11. Click Show or hide wallets
+12. Verify that the first toggle is disabled
+13. Verify that the first toggle is on
+14. Turn on the 3rd and 4th wallets
+15. Click Save
 
-## Steps
+## Expected result
 
-| # | Action | Expected | Brief step |
-|---|---|---|---|
-| 1 | Open `/onboard` | Onboarding page opens | 1 |
-| 2 | Click Get started | Create wallet screen opens | 2 |
-| 3 | Click Create new wallet | Password form opens | Not in brief |
-| 4 | Enter the password | Field is filled | 3 |
-| 5 | Enter the same password again | Field is filled | 4 |
-| 6 | Tick the Terms of Service box | Continue becomes enabled | 5 |
-| 7 | Click Continue | Portfolio page opens | 6 |
-| 8 | Click the avatar | My wallets panel opens | 7 |
-| 9 | Check the first recovery phrase wallet | Main Wallet is displayed | 8 |
-| 10 | Click the three dots next to Recovery phrase | Options menu opens | 9 |
-| 11 | Click Show or hide wallets | Wallet list opens | 10 |
-| 12 | Check the first toggle | It is disabled | 11 |
-| 13 | Check the first toggle | It is on | 12 |
-| 14 | Turn on the 3rd and 4th wallets, noting their addresses | Both toggles are on | 13 |
-| 15 | Click Save | Returns to My wallets | 14 |
-| 16 | Read the recovery phrase list | It holds exactly the original wallet and those two addresses | Expected result |
-
-## Differences from the brief
-
-- The brief has no step for Create new wallet, but the app needs it.
-- The brief says "Main wallet". The app shows "Main Wallet".
-- The first toggle is disabled only while it is the only wallet shown, so steps 12 and 13 must run before step 14.
-
-## Why the last check uses addresses
-
-Counting three rows would pass even if the wrong wallets were saved. The test records the 3rd and 4th addresses before saving and looks for those same addresses afterwards.
-
-## Not covered
-
-- A passing Chrome headless run. The script exists, but solflare.com blocks it, so it fails at step 2.
-- Password rules and other negative cases. The brief asks for one test.
-- Google sign-in and importing a wallet.
+The recovery phrase list contains Main Wallet and the two wallets turned on in step 14.
