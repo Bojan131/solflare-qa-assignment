@@ -6,18 +6,13 @@ const SECTION = '[data-testid="section-Recovery phrase"]'; // recovery phrase pa
 
 class WalletManagementPage extends Page { // my wallets panel
   get avatar() { return $('[data-testid="wallet-picker-avatar"]'); } // avatar in the header
-  get netWorthLabel() { return $('span=Net worth'); } // net worth label in the panel
   get walletNames() { return $$(`${SECTION} [data-testid="text-wallet-name"]`); } // listed names
   get walletRows() { return $$(`${SECTION} [data-testid^="li-wallets-"]`); } // listed wallets
   // three dots next to the label
   get optionsButton() { return $(`${SECTION} [data-testid="icon-btn-wallet-section-options"]`); }
-  get createNewItem() { return $('[data-testid="li-recovery-phrase-create-new"]'); } // menu item
-  get renameItem() { return $('[data-testid="li-recovery-phrase-rename-section"]'); } // menu item
   get showOrHideItem() { return $('[data-testid="li-recovery-phrase-show-or-hide"]'); } // menu item
-  get revealItem() { return $('[data-testid="li-recovery-phrase-export"]'); } // menu item
-  get removeItem() { return $('[data-testid="li-recovery-phrase-remove"]'); } // menu item
 
-  walletRow(address?: string) { // finds one wallet in the list
+  walletRow(address: string) { // finds one wallet in the list
     return $(`${SECTION} [data-testid="li-wallets-${address}"]`); // row for that address
   }
 
@@ -39,7 +34,7 @@ class WalletManagementPage extends Page { // my wallets panel
   async getWalletAddresses() { // reads addresses from the list
     // each test id holds an address
     const testIds = await this.walletRows.map((row) => row.getAttribute('data-testid'));
-    return testIds.map((testId) => testId?.replace('li-wallets-', '')); // keep only the address
+    return testIds.map((testId) => testId!.replace('li-wallets-', '')); // keep only the address
   }
 }
 

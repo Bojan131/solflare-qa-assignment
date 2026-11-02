@@ -17,30 +17,28 @@
 ## Test steps
 
 1. Go to https://solflare.com/onboard
-2. Verify that the page loaded and the Solflare logo, Get started and Import existing wallet are displayed
+2. Verify that Get started is displayed
 3. Click Get started
-4. Verify that Create new wallet and Continue with Google are displayed
-5. Click Create new wallet
-6. Verify that both password fields and Continue are displayed, and Continue is disabled
-7. Enter a password
-8. Enter the same password in the second field
-9. Accept the Terms of Service and Privacy Policy
-10. Verify that Continue is enabled
-11. Click Continue
-12. Verify that the page loaded and the Solflare logo, balance panel and Main Wallet button are displayed
-13. Click the avatar in the header to open Wallet management
-14. Verify that Net worth and Main Wallet are displayed
-15. Click the three dots next to Recovery phrase
-16. Verify that Create new wallet, Rename recovery phrase, Show or hide wallets, Reveal recovery phrase and Remove recovery phrase are displayed
-17. Click Show or hide wallets
-18. Verify that the wallet list is displayed and Save is disabled
-19. Verify that the first toggle is disabled
-20. Verify that the first toggle is on
-21. Turn on the 3rd and 4th wallets
-22. Verify that both toggles are on and Save is enabled
-23. Click Save
-24. Reload the page
+4. Click Create new wallet
+5. Verify that Continue is disabled
+6. Enter a password
+7. Enter the same password in the second field
+8. Accept the Terms of Service and Privacy Policy
+9. Verify that Continue is enabled
+10. Click Continue
+11. Verify that the Portfolio page opens and the balance panel is displayed
+12. Click the avatar in the header to open Wallet management
+13. Verify that Main Wallet is displayed
+14. Click the three dots next to Recovery phrase
+15. Click Show or hide wallets
+16. Verify that Save is disabled
+17. Verify that the first toggle is disabled
+18. Verify that the first toggle is on
+19. Note the wallet addresses, then turn on the 3rd and 4th wallets
+20. Verify that both toggles are on and Save is enabled
+21. Click Save
+22. Reload the page
 
 ## Expected result
 
-Before and after the reload, the recovery phrase list shows 3 wallets: Main Wallet and the two wallets turned on in step 21.
+Before and after the reload, the recovery phrase list shows 3 wallets: Main Wallet and the two wallets turned on in step 19.

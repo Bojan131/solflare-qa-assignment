@@ -6,4 +6,9 @@ export default class Page { // shared by all page objects
     log.info(`open ${path}`); // record the action
     await browser.url(path); // path is relative to baseUrl
   }
+
+  async reload() { // reloads the current page
+    log.info('reload page'); // record the action
+    await browser.refresh(); // reload it
+  }
 }

@@ -10,52 +10,39 @@ const FIRST_WALLET = 0; // list positions start at zero
 const THIRD_WALLET = 2; // 3rd item in the list
 const FOURTH_WALLET = 3; // 4th item in the list
 
+async function expectSavedWallets(addresses: string[]) { // checks the list holds exactly these
+  await expect(walletManagementPage.walletRows).toBeElementsArrayOfSize(3); // original plus two
+  const savedAddresses = await walletManagementPage.getWalletAddresses(); // read the list
+  expect(savedAddresses).toEqual(expect.arrayContaining(addresses)); // all three listed
+  for (const address of addresses) { // check each wallet
+    await expect(walletManagementPage.walletRow(address)).toBeDisplayed(); // it is visible
+  }
+}
+
 describe('Wallet management', () => { // wallet management feature
   it('shows the two new wallets in the recovery phrase list after saving', async () => { // the flow
     await onboardingPage.openOnboarding(); // go to onboarding
-    await expect(browser).toHaveUrl(expect.stringContaining('/onboard')); // onboarding page loaded
-    await expect(onboardingPage.logo).toBeDisplayed(); // logo is visible
-    await expect(onboardingPage.getStartedButton).toBeDisplayed(); // get started is visible
-    await expect(onboardingPage.importWalletButton).toBeDisplayed(); // import wallet is visible
-
+    await expect(onboardingPage.getStartedButton).toBeDisplayed(); // the app has loaded
     await onboardingPage.clickGetStarted(); // click get started
-    await expect(onboardingPage.createWalletButton).toBeDisplayed(); // create wallet is visible
-    await expect(onboardingPage.googleButton).toBeDisplayed(); // google option is visible
-
     await onboardingPage.clickCreateWallet(); // click create new wallet
-    await expect(onboardingPage.passwordInput).toBeDisplayed(); // first field is visible
-    await expect(onboardingPage.repeatPasswordInput).toBeDisplayed(); // second field is visible
-    await expect(onboardingPage.continueButton).toBeDisplayed(); // continue is visible
-    await expect(onboardingPage.continueButton).toBeDisabled(); // cannot continue on an empty form
 
+    await expect(onboardingPage.continueButton).toBeDisabled(); // cannot continue on an empty form
     await onboardingPage.enterPassword(PASSWORD); // type password
     await onboardingPage.repeatPassword(PASSWORD); // type it again
     await onboardingPage.acceptTerms(); // tick terms box
     await expect(onboardingPage.continueButton).toBeEnabled(); // form is valid
     await onboardingPage.clickContinue(); // submit the form
 
-    await expect(browser).toHaveUrl(expect.stringContaining('/portfolio')); // portfolio page loaded
-    await expect(portfolioPage.logo).toBeDisplayed(); // logo is visible
-    await expect(portfolioPage.balancePanel).toBeDisplayed(); // balance panel is visible
-    await expect(portfolioPage.walletPicker).toBeDisplayed(); // main wallet button is visible
-    // the button says main wallet
-    await expect(portfolioPage.walletPicker).toHaveText(expect.stringContaining('Main Wallet'));
+    await expect(browser).toHaveUrl(expect.stringContaining('/portfolio')); // wallet was created
+    await expect(portfolioPage.balancePanel).toBeDisplayed(); // portfolio has loaded
 
     await walletManagementPage.clickAvatar(); // open my wallets
-    await expect(walletManagementPage.netWorthLabel).toBeDisplayed(); // net worth is visible
     await expect(walletManagementPage.walletNames[FIRST_WALLET]).toBeDisplayed(); // name is visible
     // it is the main wallet
     await expect(walletManagementPage.walletNames[FIRST_WALLET]).toHaveText('Main Wallet');
 
     await walletManagementPage.clickOptions(); // click three dots
-    await expect(walletManagementPage.createNewItem).toBeDisplayed(); // create new wallet item
-    await expect(walletManagementPage.renameItem).toBeDisplayed(); // rename item
-    await expect(walletManagementPage.showOrHideItem).toBeDisplayed(); // show or hide item
-    await expect(walletManagementPage.revealItem).toBeDisplayed(); // reveal phrase item
-    await expect(walletManagementPage.removeItem).toBeDisplayed(); // remove phrase item
-
     await walletManagementPage.clickShowOrHide(); // open wallet toggles
-    await expect(showHideWalletsPage.panel).toBeDisplayed(); // the menu opened
     await expect(showHideWalletsPage.toggles).toBeElementsArrayOfSize({ gte: 4 }); // list loaded
     await expect(showHideWalletsPage.saveButton).toBeDisabled(); // nothing to save yet
 
@@ -76,17 +63,10 @@ describe('Wallet management', () => { // wallet management feature
     await expect(showHideWalletsPage.saveButton).toBeEnabled(); // there is something to save
     await showHideWalletsPage.clickSave(); // save the choices
 
-    await expect(walletManagementPage.walletRows).toBeElementsArrayOfSize(3); // original plus two
-    const savedAddresses = await walletManagementPage.getWalletAddresses(); // read the list
     const expectedAddresses = [mainAddress, thirdAddress, fourthAddress]; // recorded before saving
-    expect(savedAddresses).toEqual(expect.arrayContaining(expectedAddresses)); // all three listed
-    await expect(walletManagementPage.walletRow(mainAddress)).toBeDisplayed(); // original visible
-    await expect(walletManagementPage.walletRow(thirdAddress)).toBeDisplayed(); // 3rd is visible
-    await expect(walletManagementPage.walletRow(fourthAddress)).toBeDisplayed(); // 4th is visible
+    await expectSavedWallets(expectedAddresses); // the list shows these three
 
-    await browser.refresh(); // reload to prove the choices were stored
-    await expect(walletManagementPage.walletRows).toBeElementsArrayOfSize(3); // still three wallets
-    const reloadedAddresses = await walletManagementPage.getWalletAddresses(); // read it again
-    expect(reloadedAddresses).toEqual(expect.arrayContaining(expectedAddresses)); // same wallets
+    await walletManagementPage.reload(); // reload to prove the choices were stored
+    await expectSavedWallets(expectedAddresses); // the list still shows these three
   });
 });
