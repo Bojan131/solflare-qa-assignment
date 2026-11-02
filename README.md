@@ -30,6 +30,8 @@ npm run test:e2e:firefox:headless         # Firefox, headless
 npm run test:e2e:chrome:headless          # Chrome, headless. Currently fails, see known issues
 npm run test:api                          # API tests
 npm run typecheck                         # TypeScript check
+npm run format                            # Format the code with Prettier
+npm run format:check                      # Check the format without changing files
 ```
 
 The scripts pass the browser as an argument, which also works directly:
@@ -40,11 +42,11 @@ npx wdio run wdio.conf.ts --browser=firefox
 
 ## Test output
 
-| What | Where |
-|---|---|
-| Actions and failure details | `logs/<browser>/manage-wallets.e2e-0-0.log`, replaced on each run; failure details also print in the terminal |
-| Screenshot of each failed test | `screenshots/` |
-| API report | `reports/api/index.html` |
+| What                           | Where                                                                                                         |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------- |
+| Actions and failure details    | `logs/<browser>/manage-wallets.e2e-0-0.log`, replaced on each run; failure details also print in the terminal |
+| Screenshot of each failed test | `screenshots/`                                                                                                |
+| API report                     | `reports/api/index.html`                                                                                      |
 
 ## Project layout
 

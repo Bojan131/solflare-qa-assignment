@@ -18,19 +18,21 @@ export const config: WebdriverIO.Config = {
   runner: 'local',
   specs: ['./tests/e2e/**/*.e2e.ts'],
   maxInstances: 1,
-  capabilities: [{
-    browserName,
-    // Downloads the browser, so nothing has to be installed.
-    // An older installed Firefox hung on startup.
-    browserVersion: 'stable',
-    'goog:chromeOptions': {
-      args: [`--lang=${LANGUAGE}`],
-      prefs: { 'intl.accept_languages': LANGUAGE },
+  capabilities: [
+    {
+      browserName,
+      // Downloads the browser, so nothing has to be installed.
+      // An older installed Firefox hung on startup.
+      browserVersion: 'stable',
+      'goog:chromeOptions': {
+        args: [`--lang=${LANGUAGE}`],
+        prefs: { 'intl.accept_languages': LANGUAGE },
+      },
+      'moz:firefoxOptions': {
+        prefs: { 'intl.accept_languages': LANGUAGE },
+      },
     },
-    'moz:firefoxOptions': {
-      prefs: { 'intl.accept_languages': LANGUAGE },
-    },
-  }],
+  ],
   baseUrl: 'https://solflare.com',
   // Keeps WebdriverIO's own logs short but keeps our action log
   logLevel: 'warn',

@@ -4,8 +4,12 @@ import Page from './page';
 
 // Show or hide wallets screen, with one toggle per wallet
 class ShowHideWalletsPage extends Page {
-  get toggles() { return $$('[data-testid^="tgl-li-wallets-"]'); }
-  get saveButton() { return $('[data-testid="btn-save"]'); }
+  get toggles() {
+    return $$('[data-testid^="tgl-li-wallets-"]');
+  }
+  get saveButton() {
+    return $('[data-testid="btn-save"]');
+  }
 
   async getAddress(position: number) {
     // The toggle's test ID ends with the wallet's address

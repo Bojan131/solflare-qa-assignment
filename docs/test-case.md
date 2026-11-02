@@ -1,18 +1,18 @@
 # TC-01: Recovery phrase list shows newly added wallets
 
-| Field | Value |
-|---|---|
-| Test case ID | TC-01 |
-| Module | Wallet management |
-| Description | Verify that wallets turned on in Show or hide wallets appear in the recovery phrase list |
-| Requirement | Technical assignment, task 1 |
-| Priority | High |
-| Test type | Functional, E2E |
-| Automation | Automated in `tests/e2e/manage-wallets.e2e.ts` |
-| Environment | Production, https://solflare.com |
-| Browsers | Chrome and Firefox, latest stable |
-| Preconditions | Clean browser session with no wallet |
-| Test data | Any valid password |
+| Field         | Value                                                                                    |
+| ------------- | ---------------------------------------------------------------------------------------- |
+| Test case ID  | TC-01                                                                                    |
+| Module        | Wallet management                                                                        |
+| Description   | Verify that wallets turned on in Show or hide wallets appear in the recovery phrase list |
+| Requirement   | Technical assignment, task 1                                                             |
+| Priority      | High                                                                                     |
+| Test type     | Functional, E2E                                                                          |
+| Automation    | Automated in `tests/e2e/manage-wallets.e2e.ts`                                           |
+| Environment   | Production, https://solflare.com                                                         |
+| Browsers      | Chrome and Firefox, latest stable                                                        |
+| Preconditions | Clean browser session with no wallet                                                     |
+| Test data     | Any valid password                                                                       |
 
 ## Test steps
 

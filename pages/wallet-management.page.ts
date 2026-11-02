@@ -6,11 +6,21 @@ const SECTION = '[data-testid="section-Recovery phrase"]';
 
 // My wallets panel, opened from the avatar in the header
 class WalletManagementPage extends Page {
-  get avatar() { return $('[data-testid="wallet-picker-avatar"]'); }
-  get walletNames() { return $$(`${SECTION} [data-testid="text-wallet-name"]`); }
-  get walletRows() { return $$(`${SECTION} [data-testid^="li-wallets-"]`); }
-  get optionsButton() { return $(`${SECTION} [data-testid="icon-btn-wallet-section-options"]`); }
-  get showOrHideItem() { return $('[data-testid="li-recovery-phrase-show-or-hide"]'); }
+  get avatar() {
+    return $('[data-testid="wallet-picker-avatar"]');
+  }
+  get walletNames() {
+    return $$(`${SECTION} [data-testid="text-wallet-name"]`);
+  }
+  get walletRows() {
+    return $$(`${SECTION} [data-testid^="li-wallets-"]`);
+  }
+  get optionsButton() {
+    return $(`${SECTION} [data-testid="icon-btn-wallet-section-options"]`);
+  }
+  get showOrHideItem() {
+    return $('[data-testid="li-recovery-phrase-show-or-hide"]');
+  }
 
   walletRow(address: string) {
     return $(`${SECTION} [data-testid="li-wallets-${address}"]`);

@@ -4,14 +4,26 @@ import Page from './page';
 
 // Onboarding screens, from the first page to the password form
 class OnboardingPage extends Page {
-  get getStartedButton() { return $('[data-testid="btn-get-started"]'); }
-  get createWalletButton() { return $('[data-testid="btn-manual-create"]'); }
-  get passwordInput() { return $('[data-testid="input-new-password"]'); }
-  get repeatPasswordInput() { return $('[data-testid="input-repeat-password"]'); }
+  get getStartedButton() {
+    return $('[data-testid="btn-get-started"]');
+  }
+  get createWalletButton() {
+    return $('[data-testid="btn-manual-create"]');
+  }
+  get passwordInput() {
+    return $('[data-testid="input-new-password"]');
+  }
+  get repeatPasswordInput() {
+    return $('[data-testid="input-repeat-password"]');
+  }
   // The input is 1x1 and the outer label's centre is the Terms of Service link,
   // so the inner label is the only safe place to click
-  get termsCheckbox() { return $('[data-key="onboard-term-and-conditions-check"] label'); }
-  get continueButton() { return $('[data-testid="btn-continue"]'); }
+  get termsCheckbox() {
+    return $('[data-key="onboard-term-and-conditions-check"] label');
+  }
+  get continueButton() {
+    return $('[data-testid="btn-continue"]');
+  }
 
   async openOnboarding() {
     await this.open('/onboard');
