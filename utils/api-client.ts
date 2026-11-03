@@ -9,7 +9,7 @@ const AUTH_HEADER = `Bearer ${randomUUID()}`;
 const PRICE_DRIFT_SHARE = 0.005;
 // The API sometimes stalls, and the slowest answer measured took 103 seconds
 const REQUEST_TIMEOUT_MS = 120000;
-// The brief sets no limit, so this is our own bar. Normal answers came back in under 6 seconds.
+// The assignment sets no limit, so this is our own bar. Normal answers took under 6 seconds.
 const SLOW_REQUEST_MS = 10000;
 
 export const ADDRESSES = [
@@ -23,15 +23,20 @@ export const SAME_RESPONSE_DECIMALS = 6;
 
 export interface Token {
   symbol: string;
+  mint: string;
   totalUiAmount: number;
   isStock: boolean;
+  isStablecoin: boolean;
+  verified: boolean;
+  category: string | null;
   // Missing on tokens with no price, and the API leaves those out of the total
-  price?: { price: number };
+  price?: { price: number; change: number };
 }
 
 export interface TokensResponse {
   tokens: Token[];
-  value: { total: number };
+  value: { total: number; change: number; percentage: number };
+  solValue: { total: number };
   tokensValue: { total: number };
   stocksValue: { total: number };
   errors: unknown[];
@@ -39,6 +44,7 @@ export interface TokensResponse {
 
 export interface BalancesResponse {
   netWorth: number;
+  netWorthChange: number;
   data: { publicKey: string; value: number }[];
 }
 
@@ -49,7 +55,10 @@ interface RequestOptions {
   auth?: string | null;
 }
 
-// Sends every request, so a stall or a slow answer fails the test and names the URL
+// Answers over the limit, which tests/api/setup.ts turns into a failure of their own
+export const slowAnswers: string[] = [];
+
+// Sends every request, so a stall fails with its URL and a slow answer gets recorded
 async function send(url: string, init: RequestInit) {
   const started = Date.now();
   try {
@@ -57,8 +66,7 @@ async function send(url: string, init: RequestInit) {
     // Waits for the whole body, because the answer can also stall after its headers arrive
     await response.clone().text();
     const elapsed = Date.now() - started;
-    // Soft, so the test still checks the values and a stall doesn't read as a wrong value
-    expect.soft(elapsed, `${url} answered too slowly, in ms`).toBeLessThanOrEqual(SLOW_REQUEST_MS);
+    if (elapsed > SLOW_REQUEST_MS) slowAnswers.push(`${url} took ${elapsed} ms`);
     return response;
   } catch (error) {
     throw new Error(`${url} failed after ${Date.now() - started} ms`, { cause: error });
@@ -106,6 +114,11 @@ export async function getTokens(address: string, options: RequestOptions = {}) {
 // Fetches wallet balances and checks the call succeeded
 export async function getBalances(pubkeys: string[], options: RequestOptions = {}) {
   return readJson<BalancesResponse>(await requestBalances(pubkeys, options));
+}
+
+// What a token is worth. A token with no price counts as 0, as it does in the API's own total.
+export function tokenValue(token: Token) {
+  return (token.price?.price ?? 0) * token.totalUiAmount;
 }
 
 // Adds up the wallet values in one balances response

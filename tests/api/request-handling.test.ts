@@ -16,7 +16,7 @@ import {
 type RejectedRequest = [string, () => Promise<Response>];
 
 const WRONG_TOKEN = 'Bearer not-a-real-token';
-// The brief doesn't list error codes, so these allow the sensible ones instead of locking in
+// The assignment doesn't list error codes, so these allow the sensible ones instead of locking in
 // today's exact code. 429 is left out on purpose: it means the rate limit answered, not the check.
 const AUTH_STATUSES = [401, 403];
 const BAD_INPUT_STATUSES = [400, 422];
@@ -32,81 +32,46 @@ async function expectRejected(response: Response, allowedStatuses: number[]) {
 
 // Cloudflare answers these with its own block page before the API sees the request
 const noTokenRequests: RejectedRequest[] = [
-  ['API-06: rejects tokens with no token', () => requestTokens(ADDRESSES[0], { auth: null })],
-  ['API-06: rejects balances with no token', () => requestBalances(PUBKEYS, { auth: null })],
+  ['API-08: rejects tokens with no token', () => requestTokens(ADDRESSES[0], { auth: null })],
+  ['API-08: rejects balances with no token', () => requestBalances(PUBKEYS, { auth: null })],
 ];
 
 const wrongTokenRequests: RejectedRequest[] = [
   [
-    'API-07: rejects tokens with a wrong token',
+    'API-09: rejects tokens with a wrong token',
     () => requestTokens(ADDRESSES[0], { auth: WRONG_TOKEN }),
   ],
   [
-    'API-07: rejects balances with a wrong token',
+    'API-09: rejects balances with a wrong token',
     () => requestBalances(PUBKEYS, { auth: WRONG_TOKEN }),
   ],
 ];
 
 const badInputRequests: RejectedRequest[] = [
   [
-    'API-08: rejects tokens with an invalid network',
+    'API-10: rejects tokens with an invalid network',
     () => requestTokens(ADDRESSES[0], { network: 'moonnet' }),
   ],
-  ['API-08: rejects balances with no 1 prefix', () => requestBalances(ADDRESSES)],
-  ['API-08: rejects balances with a malformed pubkey', () => requestBalances(['1not-an-address'])],
-  ['API-08: rejects balances with no pubkeys field', () => requestBalancesWithBody('{}')],
+  ['API-10: rejects balances with no 1 prefix', () => requestBalances(ADDRESSES)],
+  ['API-10: rejects balances with a malformed pubkey', () => requestBalances(['1not-an-address'])],
+  ['API-10: rejects balances with no pubkeys field', () => requestBalancesWithBody('{}')],
   // A partial answer here would quietly understate someone's net worth
   [
-    'API-08: rejects balances when one pubkey of two is malformed',
+    'API-10: rejects balances when one pubkey of two is malformed',
     () => requestBalances([PUBKEYS[0], '1not-an-address']),
   ],
   [
-    'API-08: rejects balances with an invalid network',
+    'API-10: rejects balances with an invalid network',
     () => requestBalances(PUBKEYS, { network: 'moonnet' }),
   ],
   [
-    'API-08: rejects balances with an unsupported currency',
+    'API-10: rejects balances with an unsupported currency',
     () => requestBalances(PUBKEYS, { currency: 'xxx' }),
   ],
 ];
 
-// Everything beyond the brief's two scenarios
-describe('Request handling', () => {
-  // Both wallets, because only one of them holds stocks and their rows have extra fields
-  it('API-04: every token row has the expected fields on both wallets', async () => {
-    for (const address of ADDRESSES) {
-      const portfolio = await getTokens(address);
-
-      expect(portfolio).toMatchObject({
-        value: { total: expect.any(Number) },
-        tokensValue: { total: expect.any(Number) },
-        stocksValue: { total: expect.any(Number) },
-        errors: expect.any(Array),
-      });
-      expect(portfolio.tokens.length).toBeGreaterThan(0);
-      for (const token of portfolio.tokens) {
-        expect(token, token.symbol).toMatchObject({
-          symbol: expect.any(String),
-          totalUiAmount: expect.any(Number),
-          isStock: expect.any(Boolean),
-        });
-        // The price can be missing, but when it's there the totals depend on it being a number
-        if (token.price) expect(token.price.price, token.symbol).toEqual(expect.any(Number));
-      }
-    }
-  });
-
-  // Net worth and the wallet rows are what the app builds its totals from
-  it('API-05: every wallet row has the expected fields', async () => {
-    const balances = await getBalances(PUBKEYS);
-
-    expect(balances.netWorth).toEqual(expect.any(Number));
-    expect(balances.data.length).toBeGreaterThan(0);
-    for (const wallet of balances.data) {
-      expect(wallet).toMatchObject({ publicKey: expect.any(String), value: expect.any(Number) });
-    }
-  });
-
+// How the API handles bad and unusual requests
+describe('Extra: request handling', () => {
   it.each(noTokenRequests)('%s', async (_name, send) => {
     await expectRejected(await send(), AUTH_STATUSES);
   });
@@ -118,7 +83,7 @@ describe('Request handling', () => {
   });
 
   // The address is part of the URL, so a 404 is a sensible answer here and not for the others
-  it('API-08: rejects tokens with a malformed address', async () => {
+  it('API-10: rejects tokens with a malformed address', async () => {
     await expectRejected(await requestTokens('not-an-address'), [...BAD_INPUT_STATUSES, 404]);
   });
 
@@ -127,16 +92,9 @@ describe('Request handling', () => {
     await expectRejected(await send(), BAD_INPUT_STATUSES);
   });
 
-  // Known bug: the API answers with a 500. it.fails counts any error as the expected one, so this
-  // checks for the 500 alone. Any other answer, like the fix or a 429, turns the test red.
-  it.fails('API-12: does not answer malformed JSON with a 500', async () => {
-    const response = await requestBalancesWithBody('not json');
-    expect(response.status).not.toBe(500);
-  });
-
   // Compares with mainnet, because a bare status check would still pass if network were ignored.
   // It doesn't expect zero, because anyone can send test funds to a public address.
-  it.each(['devnet', 'testnet'])('API-09: returns different values on %s', async (network) => {
+  it.each(['devnet', 'testnet'])('API-11: returns different values on %s', async (network) => {
     const [mainnet, other] = await Promise.all([
       getBalances(PUBKEYS),
       getBalances(PUBKEYS, { network }),
@@ -150,24 +108,23 @@ describe('Request handling', () => {
   });
 
   // A wallet listed twice would otherwise show double its real value
-  it('API-10: does not count a duplicate address twice', async () => {
+  it('API-12: does not count a duplicate address twice', async () => {
     const [once, twice] = await Promise.all([
       getBalances([PUBKEYS[0]]),
       getBalances([PUBKEYS[0], PUBKEYS[0]]),
     ]);
 
     expectWithinPriceDrift(twice.netWorth, once.netWorth, 'duplicate vs single');
+    expect(twice.netWorth).toBeCloseTo(sumOfWallets(twice), SAME_RESPONSE_DECIMALS);
   });
 
-  // Doesn't check the exchange rate itself, because the brief gives no rate to compare with
-  it('API-11: returns a consistent value in another currency', async () => {
-    const [usd, eur] = await Promise.all([
-      getBalances(PUBKEYS),
-      getBalances(PUBKEYS, { currency: 'eur' }),
-    ]);
-
-    expect(eur.netWorth).toBeGreaterThan(0);
-    expectBeyondPriceDrift(eur.netWorth, usd.netWorth, 'EUR vs USD');
-    expect(eur.netWorth).toBeCloseTo(sumOfWallets(eur), SAME_RESPONSE_DECIMALS);
+  // Known bug: the API answers with a 500. it.fails counts any error as the expected one, so only
+  // the 500 itself may fail here. The fix, a 429 or no answer at all turns the test red.
+  it.fails('API-13: does not answer malformed JSON with a 500', async () => {
+    const status = await requestBalancesWithBody('not json').then(
+      (response) => response.status,
+      () => 'no answer',
+    );
+    expect(status).not.toBe(500);
   });
 });

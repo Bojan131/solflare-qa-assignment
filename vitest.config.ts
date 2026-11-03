@@ -4,7 +4,7 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   test: {
     include: ['tests/api/**/*.test.ts'],
-    setupFiles: ['tests/api/pacing.ts'],
+    setupFiles: ['tests/api/setup.ts'],
     // Above two requests at the API client's 2 minute limit, so its clearer error reports first
     testTimeout: 300000,
     // One file at a time, to go easier on the API's rate limit

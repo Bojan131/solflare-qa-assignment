@@ -7,19 +7,17 @@ import {
   PUBKEYS,
   SAME_RESPONSE_DECIMALS,
   sumOfWallets,
+  tokenValue,
   type Token,
 } from '../../utils/api-client';
 
-// Adds up price x amount. Tokens with no price count as 0, as they do in the API's own total.
+// Adds up what each token is worth, from its price and amount
 function calculateTotal(tokens: Token[]) {
-  return tokens.reduce(
-    (total, token) => total + (token.price?.price ?? 0) * token.totalUiAmount,
-    0,
-  );
+  return tokens.reduce((total, token) => total + tokenValue(token), 0);
 }
 
-// Scenarios 1 and 2 from the brief
-describe('Portfolio values', () => {
+// Scenarios 1 and 2 from the assignment
+describe('Assignment scenarios', () => {
   // Soft checks, so a wrong value for one address does not hide a problem with the other
   it('API-01: total value matches the tokens and stocks for both addresses', async () => {
     for (const address of ADDRESSES) {
@@ -67,7 +65,7 @@ describe('Portfolio values', () => {
     });
   });
 
-  // Uses only the balances endpoint, as the brief asks
+  // Uses only the balances endpoint, as the assignment asks
   it('API-03: net worth equals the sum of the wallet values', async () => {
     const balances = await getBalances(PUBKEYS);
     const walletAddresses = balances.data.map((wallet) => wallet.publicKey);
