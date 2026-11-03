@@ -6,6 +6,9 @@ on:
     branches: [main]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   api-tests:
     runs-on: ubuntu-latest
@@ -16,11 +19,13 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - run: npm run format:check
-      - run: npm run typecheck
       - run: npm run test:api
+      # Run even if the tests fail, so one problem doesn't hide another
+      - run: npm run typecheck
+        if: always()
+      - run: npm run format:check
+        if: always()
       - uses: actions/upload-artifact@v7
-        # Keep the report when tests fail, because that is when it is needed
         if: always()
         with:
           name: api-report
