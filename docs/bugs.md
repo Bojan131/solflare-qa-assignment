@@ -66,4 +66,4 @@ Test API-13 covers this.
 
 ## Not a bug, but worth knowing
 
-**Chrome headless is blocked.** solflare.com answers Chrome's headless browser with a 403, so `npm run test:e2e:chrome:headless` fails on the first screen. Chrome with a window and Firefox, with or without a window, all work. I didn't disguise the browser to get past the block. The [README](../README.md#known-issues) has the details.
+**Chrome headless is blocked.** solflare.com answers Chrome's headless browser with a 403, so `npm run test:e2e:chrome:headless` fails on the first screen. Chrome with a window and Firefox, with or without a window, all work. I didn't disguise the browser to get past the block. On a real project, I'd ask the team for an approved way through, such as a secret header Cloudflare lets pass or an allowlisted IP for the test machines, instead of disguising the browser. The [README](../README.md#known-issues) has the details.

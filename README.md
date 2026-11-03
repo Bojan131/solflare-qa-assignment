@@ -48,7 +48,7 @@ An API run takes about a minute and shows `1 expected fail`. That's API-13, a kn
 - No Cucumber, because there is one test and no business team writing scenarios. No Docker, because WebdriverIO downloads the browsers itself, so Node is the only requirement.
 - E2E isn't in GitHub Actions, because each run creates a wallet on the live site. Only the API tests run there.
 - No retries, because a retry could hide a real bug.
-- Prices move between calls, so values from separate responses can differ by 0.5%. The worst gap I measured was 0.011%, with the stock market closed. Values from one response must match to 6 decimals.
+- Prices move between calls, so values from separate responses can differ by 0.25%. The worst gap I measured was 0.086%, with the stock market open. Values from one response must match to 6 decimals.
 - The net worth test sends its own GET calls instead of reusing the first test's, because the assignment also asks for independent tests.
 - The assignment lists no error codes, so a bad token can get 401 or 403, and bad input 400 or 422. A 429 fails these tests, because it means the rate limit answered and the check never ran.
 - Tests that only compare the API with itself can't see data that's wrong everywhere, so token amounts are compared with the blockchain and the EUR value with the European Central Bank's rate. If either service fails, the error names it, so it doesn't read as an API bug.
@@ -57,7 +57,7 @@ An API run takes about a minute and shows `1 expected fail`. That's API-13, a kn
 
 ## Known issues
 
-**Chrome headless is blocked.** solflare.com answers Chrome's headless browser with a 403, so that script fails on the first screen, and I didn't disguise the browser to get past it. You can see it with curl, which returned 403 on 2 Nov 2026, while a normal Chrome user agent got a 200:
+**Chrome headless is blocked.** solflare.com answers Chrome's headless browser with a 403, so that script fails on the first screen, and I didn't disguise the browser to get past it. On a real project, I'd ask the team for an approved way through, such as a secret header Cloudflare lets pass or an allowlisted IP for the test machines, instead of disguising the browser. You can see it with curl, which returned 403 on 2 Nov 2026, while a normal Chrome user agent got a 200:
 
 ```bash
 curl -s -o /dev/null -w '%{http_code}\n' -A 'HeadlessChrome/156.0.0.0' https://solflare.com/onboard
@@ -75,8 +75,8 @@ Results on macOS, 2 and 3 Nov 2026.
 
 - **E2E:** 9 of 9 passed across Chrome, Firefox and Firefox headless, and Chrome and Firefox headless passed again on the final code.
 - **API checks broken on purpose:** 64 of 64 failed the test on the broken check.
-- **Realistic API bugs injected into recorded answers:** 46 of 49 caught. The tool for this isn't in the repo, to keep it minimal.
-- **API runs back to back:** 5 of 6 passed with no rate limit errors. The 6th failed on a real stall, which is in the bug report.
+- **Realistic API bugs injected into recorded answers:** 47 of 49 caught. The 2 misses are a wrong price on a single token, as listed under Not covered. The tool for this isn't in the repo, to keep it minimal.
+- **API runs:** 8 of 8 passed with the stock market open. Back to back, 5 of 6 passed with no rate limit errors, and the 6th failed on a real stall, which is in the bug report.
 - **Stalls made on demand:** a request with no answer fails at 2 minutes and names the URL. A slow answer fails the run and lists the URL, and the values still get checked.
 
 ## Differences from the assignment
