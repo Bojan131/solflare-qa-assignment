@@ -6,6 +6,6 @@ export default defineConfig({
     include: ['tests/api/**/*.test.ts'],
     // The API is live, so give it time to answer
     testTimeout: 30000,
-    reporters: ['default', ['html', { outputDir: 'reports/api' }]],
+    reporters: ['verbose', ['html', { outputDir: 'reports/api' }]],
   },
 });
