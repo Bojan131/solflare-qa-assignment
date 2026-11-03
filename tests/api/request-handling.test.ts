@@ -32,40 +32,43 @@ async function expectRejected(response: Response, allowedStatuses: number[]) {
 
 // Cloudflare answers these with its own block page before the API sees the request
 const noTokenRequests: RejectedRequest[] = [
-  ['API-08: rejects tokens with no token', () => requestTokens(ADDRESSES[0], { auth: null })],
-  ['API-08: rejects balances with no token', () => requestBalances(PUBKEYS, { auth: null })],
+  ['API-08: rejects GET tokens with no token', () => requestTokens(ADDRESSES[0], { auth: null })],
+  ['API-08: rejects POST balances with no token', () => requestBalances(PUBKEYS, { auth: null })],
 ];
 
 const wrongTokenRequests: RejectedRequest[] = [
   [
-    'API-09: rejects tokens with a wrong token',
+    'API-09: rejects GET tokens with a wrong token',
     () => requestTokens(ADDRESSES[0], { auth: WRONG_TOKEN }),
   ],
   [
-    'API-09: rejects balances with a wrong token',
+    'API-09: rejects POST balances with a wrong token',
     () => requestBalances(PUBKEYS, { auth: WRONG_TOKEN }),
   ],
 ];
 
 const badInputRequests: RejectedRequest[] = [
   [
-    'API-10: rejects tokens with an invalid network',
+    'API-10: rejects GET tokens with an invalid network',
     () => requestTokens(ADDRESSES[0], { network: 'moonnet' }),
   ],
-  ['API-10: rejects balances with no 1 prefix', () => requestBalances(ADDRESSES)],
-  ['API-10: rejects balances with a malformed pubkey', () => requestBalances(['1not-an-address'])],
-  ['API-10: rejects balances with no pubkeys field', () => requestBalancesWithBody('{}')],
+  ['API-10: rejects POST balances with no 1 prefix', () => requestBalances(ADDRESSES)],
+  [
+    'API-10: rejects POST balances with a malformed pubkey',
+    () => requestBalances(['1not-an-address']),
+  ],
+  ['API-10: rejects POST balances with no pubkeys field', () => requestBalancesWithBody('{}')],
   // A partial answer here would quietly understate someone's net worth
   [
-    'API-10: rejects balances when one pubkey of two is malformed',
+    'API-10: rejects POST balances when one pubkey of two is malformed',
     () => requestBalances([PUBKEYS[0], '1not-an-address']),
   ],
   [
-    'API-10: rejects balances with an invalid network',
+    'API-10: rejects POST balances with an invalid network',
     () => requestBalances(PUBKEYS, { network: 'moonnet' }),
   ],
   [
-    'API-10: rejects balances with an unsupported currency',
+    'API-10: rejects POST balances with an unsupported currency',
     () => requestBalances(PUBKEYS, { currency: 'xxx' }),
   ],
 ];
@@ -83,7 +86,7 @@ describe('Extra: request handling', () => {
   });
 
   // The address is part of the URL, so a 404 is a sensible answer here and not for the others
-  it('API-10: rejects tokens with a malformed address', async () => {
+  it('API-10: rejects GET tokens with a malformed address', async () => {
     await expectRejected(await requestTokens('not-an-address'), [...BAD_INPUT_STATUSES, 404]);
   });
 
@@ -119,7 +122,7 @@ describe('Extra: request handling', () => {
   });
 
   // Known bug: the API answers with a 500. it.fails counts any error as the expected one, so only
-  // the 500 itself may fail here. The fix, a 429 or no answer at all turns the test red.
+  // the 500 itself may fail here. Anything else turns the test red: the fix, a 429 or no answer.
   it.fails('API-13: does not answer malformed JSON with a 500', async () => {
     const status = await requestBalancesWithBody('not json').then(
       (response) => response.status,
