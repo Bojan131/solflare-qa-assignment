@@ -73,9 +73,9 @@ curl -s -o /dev/null -w '%{http_code}\n' -A 'HeadlessChrome/156.0.0.0' https://s
 
 Results on macOS, 2 and 3 Nov 2026.
 
-- **E2E:** 9 of 9 passed across Chrome, Firefox and Firefox headless, and Chrome and Firefox headless passed again on the final code.
+- **E2E:** 9 of 9 passed across Chrome, Firefox and Firefox headless, and on the final code it passed again in Chrome with a window and in Firefox headless.
 - **API checks broken on purpose:** 64 of 64 failed the test on the broken check.
-- **Realistic API bugs injected into recorded answers:** 47 of 49 caught. The 2 misses are a wrong price on a single token, as listed under Not covered. The tool for this isn't in the repo, to keep it minimal.
+- **Realistic API bugs injected into recorded answers:** 49 of 51 caught. The 2 misses are a wrong price on a single token, as listed under Not covered. The tool for this isn't in the repo, to keep it minimal.
 - **API runs:** 8 of 8 passed with the stock market open. Back to back, 5 of 6 passed with no rate limit errors, and the 6th failed on a real stall, which is in the bug report.
 - **Stalls made on demand:** a request with no answer fails at 2 minutes and names the URL. A slow answer fails the run and lists the URL, and the values still get checked.
 
@@ -91,5 +91,5 @@ Results on macOS, 2 and 3 Nov 2026.
 - Google sign-in, importing a wallet, and E2E on Windows or Linux.
 - Whether each token's price is right. Only USDC has an outside reference, at about $1, so a wrong price on one other token gets through. In a one-off check, all 8 priced tokens were within 0.9% of CoinGecko.
 - Whether the API's own auth rejects a missing token. Cloudflare answers first, so that test only proves the request is refused.
-- Inputs where nothing says what's right: empty `pubkeys`, GET tokens with no `network`, `general: false`, and tokens that aren't a uuid4. All return 200 today.
+- Inputs where nothing says what's right: empty `pubkeys`, GET tokens with no `network`, `general: false`, and well-formed UUID tokens that aren't version 4. All return 200 today.
 - API load, the exact rate limit, and currencies other than USD and EUR.
