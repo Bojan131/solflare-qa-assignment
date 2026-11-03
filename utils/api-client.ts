@@ -4,9 +4,9 @@ import { expect } from 'vitest';
 const BASE_URL = 'https://wallet-api.solflare.com';
 // The app sends a uuid4 generated at install, so the tests generate their own in the same way
 const AUTH_HEADER = `Bearer ${randomUUID()}`;
-// Separate responses can differ because prices move. The worst gap measured was 0.011%, with the
-// stock market closed, so this leaves room for live stock prices and any change in the balances.
-const PRICE_DRIFT_SHARE = 0.005;
+// Separate responses can differ because prices move. The worst gap measured was 0.086%, on one wallet
+// with the stock market open, so this allows about three times that.
+const PRICE_DRIFT_SHARE = 0.0025;
 // The API sometimes stalls, and the slowest answer measured took 103 seconds
 const REQUEST_TIMEOUT_MS = 120000;
 // The assignment sets no limit, so this is our own bar. Normal answers took under 6 seconds.

@@ -19,8 +19,8 @@ Send GET tokens on mainnet for both addresses. For each one:
 
 Send POST balances and GET tokens for both addresses at the same time.
 
-- Net worth is within 0.5% of the two totals added together.
-- Each wallet is within 0.5% of its own total.
+- Net worth is within 0.25% of the two totals added together.
+- Each wallet is within 0.25% of its own total.
 
 ### API-03: Net worth against the wallets (High)
 
