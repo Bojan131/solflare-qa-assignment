@@ -25,8 +25,8 @@ class OnboardingPage extends Page {
     return $('[data-testid="btn-continue"]');
   }
 
-  async openOnboarding() {
-    await this.open('/onboard');
+  async open() {
+    await super.open('/onboard');
   }
 
   async clickGetStarted() {

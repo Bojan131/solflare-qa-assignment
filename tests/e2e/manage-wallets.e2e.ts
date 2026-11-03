@@ -14,11 +14,9 @@ const THIRD_WALLET = 2;
 const FOURTH_WALLET = 3;
 
 // Checks the list holds exactly these wallets. Counting rows alone would pass
-// with the wrong wallets, so it compares the addresses too.
+// with the wrong wallets, so it looks for each address too.
 async function expectSavedWallets(addresses: string[]) {
   await expect(walletManagementPage.walletRows).toBeElementsArrayOfSize(3);
-  const savedAddresses = await walletManagementPage.getWalletAddresses();
-  expect(savedAddresses).toEqual(expect.arrayContaining(addresses));
   for (const address of addresses) {
     await expect(walletManagementPage.walletRow(address)).toBeDisplayed();
   }
@@ -27,7 +25,7 @@ async function expectSavedWallets(addresses: string[]) {
 // TC-01 in docs/test-case.md
 describe('Wallet management', () => {
   it('shows the two new wallets in the recovery phrase list after saving', async () => {
-    await onboardingPage.openOnboarding();
+    await onboardingPage.open();
     await expect(onboardingPage.getStartedButton).toBeDisplayed();
     await onboardingPage.clickGetStarted();
     await onboardingPage.clickCreateWallet();

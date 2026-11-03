@@ -40,12 +40,6 @@ class WalletManagementPage extends Page {
     log.info('click show or hide wallets');
     await this.showOrHideItem.click();
   }
-
-  async getWalletAddresses() {
-    // Each row's test ID ends with the wallet's address
-    const testIds = await this.walletRows.map((row) => row.getAttribute('data-testid'));
-    return testIds.map((testId) => testId!.replace('li-wallets-', ''));
-  }
 }
 
 export default new WalletManagementPage();
