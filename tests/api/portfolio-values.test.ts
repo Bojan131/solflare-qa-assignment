@@ -1,16 +1,16 @@
 import { describe, expect, it } from 'vitest';
 import {
   ADDRESSES,
+  expectWithinPriceDrift,
   getBalances,
   getTokens,
-  PRICE_DRIFT_LIMIT,
   PUBKEYS,
+  SAME_RESPONSE_DECIMALS,
+  sumOfWallets,
   type Token,
 } from '../../utils/api-client';
 
-// Values from one response can only differ by float rounding, so they compare to 6 decimals
-const SAME_RESPONSE_DECIMALS = 6;
-
+// Adds up price x amount. Tokens with no price count as 0, as they do in the API's own total.
 function calculateTotal(tokens: Token[]) {
   return tokens.reduce(
     (total, token) => total + (token.price?.price ?? 0) * token.totalUiAmount,
@@ -18,51 +18,63 @@ function calculateTotal(tokens: Token[]) {
   );
 }
 
-// Scenarios 1 and 2 from the brief, API-01 to API-03 in docs/api-test-cases.md
+// Scenarios 1 and 2 from the brief
 describe('Portfolio values', () => {
-  // Soft checks, so a problem with one address does not hide the other
-  it('total value matches the tokens and stocks for both addresses', async () => {
+  // Soft checks, so a wrong value for one address does not hide a problem with the other
+  it('API-01: total value matches the tokens and stocks for both addresses', async () => {
     for (const address of ADDRESSES) {
-      const portfolio = await getTokens(address);
-      const total = portfolio.value.total;
+      const { tokens, value, tokensValue, stocksValue, errors } = await getTokens(address);
+      const stocks = tokens.filter((token) => token.isStock);
+      const otherTokens = tokens.filter((token) => !token.isStock);
 
-      expect.soft(portfolio.errors, `${address} errors`).toEqual([]);
+      expect.soft(errors, `${address} errors`).toEqual([]);
       // A total above zero stops an emptied wallet from passing by accident
-      expect.soft(total, `${address} total`).toBeGreaterThan(0);
+      expect.soft(value.total, `${address} total`).toBeGreaterThan(0);
       expect
-        .soft(total, `${address} total vs price x amount`)
-        .toBeCloseTo(calculateTotal(portfolio.tokens), SAME_RESPONSE_DECIMALS);
+        .soft(value.total, `${address} total vs price x amount`)
+        .toBeCloseTo(calculateTotal(tokens), SAME_RESPONSE_DECIMALS);
       expect
-        .soft(total, `${address} total vs tokens + stocks`)
-        .toBeCloseTo(
-          portfolio.tokensValue.total + portfolio.stocksValue.total,
-          SAME_RESPONSE_DECIMALS,
-        );
+        .soft(value.total, `${address} total vs tokens + stocks`)
+        .toBeCloseTo(tokensValue.total + stocksValue.total, SAME_RESPONSE_DECIMALS);
+      // One wallet's value is all tokens and the other's all stocks, so the sum above never adds
+      // two real numbers. These catch a token counted on the wrong side.
+      expect
+        .soft(tokensValue.total, `${address} tokens value`)
+        .toBeCloseTo(calculateTotal(otherTokens), SAME_RESPONSE_DECIMALS);
+      expect
+        .soft(stocksValue.total, `${address} stocks value`)
+        .toBeCloseTo(calculateTotal(stocks), SAME_RESPONSE_DECIMALS);
     }
   });
 
   // Makes its own GET calls instead of reusing the first test's, so tests stay independent.
   // They go out together with the POST to keep the prices as close in time as possible.
-  it('net worth equals the sum of the portfolio totals', async () => {
+  it('API-02: net worth equals the sum of the portfolio totals', async () => {
     const [balances, first, second] = await Promise.all([
       getBalances(PUBKEYS),
       getTokens(ADDRESSES[0]),
       getTokens(ADDRESSES[1]),
     ]);
-    const sumOfTotals = first.value.total + second.value.total;
+    const totals = [first.value.total, second.value.total];
 
     expect(balances.netWorth).toBeGreaterThan(0);
-    expect(Math.abs(balances.netWorth - sumOfTotals)).toBeLessThanOrEqual(PRICE_DRIFT_LIMIT);
+    expectWithinPriceDrift(balances.netWorth, totals[0] + totals[1], 'net worth vs GET totals');
+    // A correct sum could still hide values attached to the wrong wallets
+    ADDRESSES.forEach((address, index) => {
+      const wallet = balances.data.find((item) => item.publicKey === address);
+      expect(wallet, `${address} is missing from balances`).toBeDefined();
+      expectWithinPriceDrift(wallet!.value, totals[index], `${address} wallet vs GET total`);
+    });
   });
 
-  it('net worth equals the sum of the wallet values', async () => {
+  // Uses only the balances endpoint, as the brief asks
+  it('API-03: net worth equals the sum of the wallet values', async () => {
     const balances = await getBalances(PUBKEYS);
     const walletAddresses = balances.data.map((wallet) => wallet.publicKey);
-    const sumOfWallets = balances.data.reduce((total, wallet) => total + wallet.value, 0);
 
     expect(walletAddresses).toHaveLength(2);
     expect(walletAddresses).toEqual(expect.arrayContaining(ADDRESSES));
     expect(balances.netWorth).toBeGreaterThan(0);
-    expect(balances.netWorth).toBeCloseTo(sumOfWallets, SAME_RESPONSE_DECIMALS);
+    expect(balances.netWorth).toBeCloseTo(sumOfWallets(balances), SAME_RESPONSE_DECIMALS);
   });
 });
