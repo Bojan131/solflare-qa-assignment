@@ -46,7 +46,7 @@ describe('Extra: portfolio accuracy', () => {
         });
         expect(token.totalUiAmount, token.symbol).toBeGreaterThanOrEqual(0);
         // Unverified tokens can have no price, but a verified one would drop out of every total
-        if (token.verified) expect(token.price, `${token.symbol} price`).toBeDefined();
+        if (token.verified) expect(token.price?.price, `${token.symbol} price`).toBeGreaterThan(0);
         if (token.price) expect(token.price.price, token.symbol).toBeGreaterThan(0);
         // The one price with a known answer, so this catches prices that are wrong across the board
         if (token.isStablecoin) {
@@ -69,10 +69,11 @@ describe('Extra: portfolio accuracy', () => {
         getTokens(address),
         getChainHoldings(address),
       ]);
-      const held = tokens.filter((token) => token.totalUiAmount > 0);
-      const apiHoldings = Object.fromEntries(
-        held.map((token) => [token.mint, token.totalUiAmount]),
-      );
+      const apiHoldings: Record<string, number> = {};
+      // Adds up instead of overwriting, so a token listed twice can't pass as one correct row
+      for (const { mint, totalUiAmount } of tokens) {
+        if (totalUiAmount > 0) apiHoldings[mint] = (apiHoldings[mint] ?? 0) + totalUiAmount;
+      }
 
       expect.soft(apiHoldings, address).toEqual(chainHoldings);
     }
