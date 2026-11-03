@@ -1,0 +1,27 @@
+# API tests only. E2E tests stay out of CI because each run creates a wallet on the live site.
+name: API tests
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  api-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run format:check
+      - run: npm run typecheck
+      - run: npm run test:api
+      - uses: actions/upload-artifact@v7
+        # Keep the report when tests fail, because that is when it is needed
+        if: always()
+        with:
+          name: api-report
+          path: reports/api
