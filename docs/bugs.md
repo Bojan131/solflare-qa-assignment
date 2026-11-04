@@ -27,7 +27,7 @@ Mainnet, with the same empty wallet:
 
 ## API bugs
 
-Found on the production API (https://wallet-api.solflare.com) on 3 Nov 2026.
+Found on the production API (https://wallet-api.solflare.com).
 
 ### 1. Requests sometimes stall
 
@@ -66,4 +66,4 @@ Test API-13 covers this.
 
 ## Not a bug, but worth knowing
 
-**Chrome headless is blocked.** solflare.com answers Chrome's headless browser with a 403, so `npm run test:e2e:chrome:headless` fails on the first screen. Chrome with a window and Firefox, with or without a window, all work. I didn't disguise the browser to get past the block. On a real project, I'd ask the team for an approved way through. The [README](../README.md#known-issues) has the details.
+**Chrome headless is blocked.** solflare.com answers Chrome's headless browser with a 403, so `npm run test:e2e:chrome:headless` fails on the first screen. Chrome with a window and Firefox, with or without a window, all work. I didn't disguise the browser to get past the block. On a real project, I'd ask the team for an approved way through, like a secret header or an allowlisted IP address.
