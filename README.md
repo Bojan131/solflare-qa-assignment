@@ -2,94 +2,64 @@
 
 [![API tests](https://github.com/Bojan131/solflare-qa-assignment/actions/workflows/api-tests.yml/badge.svg)](https://github.com/Bojan131/solflare-qa-assignment/actions/workflows/api-tests.yml)
 
-WebdriverIO E2E test and Vitest API tests for the Solflare wallet.
+Tests for the Solflare wallet: one E2E test in WebdriverIO, and API tests in Vitest.
 
-The E2E test creates a new wallet, turns on the 3rd and 4th wallets under Show or hide wallets, saves, and checks that the recovery phrase list holds the original wallet and those two, including after a page reload. The steps are in [docs/test-case.md](docs/test-case.md).
-
-The API tests check that portfolio totals and net worth add up on the live API, that holdings match the blockchain, and how bad requests are handled. The cases are in [docs/api-test-cases.md](docs/api-test-cases.md). These tests also run in GitHub Actions on every push to `main`.
-
-The bugs I found are in [docs/bugs.md](docs/bugs.md).
+- [E2E test case](docs/test-case.md)
+- [API test cases](docs/api-test-cases.md)
+- [Bugs I found](docs/bugs.md)
 
 ## Setup
 
-You need Node 24.22.2, as set in `.nvmrc`, and internet access.
+You need Node 24.22.2 and internet access. The browsers download on their own.
 
 ```bash
 nvm install
 npm ci
 ```
 
-WebdriverIO downloads Chrome and Firefox when it needs them, so they don't have to be installed. It contacts the download sites on every run, so a Firefox run fails with `Couldn't find a matching firefox browser` if archive.mozilla.org can't be reached.
-
-## Running the tests
+## Run the tests
 
 ```bash
-npm test                                  # API tests, then E2E in Firefox headless
-npm run test:api                          # API tests
-npm run test:e2e:chrome                   # E2E in Chrome
-npm run test:e2e:firefox                  # E2E in Firefox
-npm run test:e2e:firefox:headless         # E2E in Firefox, headless
-npm run test:e2e:chrome:headless          # E2E in Chrome, headless. Currently fails, see known issues
+npm test                            # API tests, then E2E in Firefox headless
+npm run test:api                    # API tests
+npm run test:e2e:chrome             # E2E in Chrome
+npm run test:e2e:firefox            # E2E in Firefox
+npm run test:e2e:firefox:headless   # E2E in Firefox, headless
+npm run test:e2e:chrome:headless    # E2E in Chrome, headless (blocked, see known issues)
 ```
 
-The browser is a command line argument, so `npx wdio run wdio.conf.ts --browser=firefox` works too.
+You can also pick the browser yourself: `npx wdio run wdio.conf.ts --browser=firefox`.
 
-An API run takes about a minute and shows `1 expected fail`. That's API-13, a known bug. It turns red once the bug is fixed, as a reminder to remove the marker.
+An API run takes about a minute and shows `1 expected fail`. That's API-13, a known bug documented in [docs/bugs.md](docs/bugs.md).
 
-## Test output
+## Where the results go
 
-- **E2E actions and failure details:** `logs/<browser>/`, with failure details also in the terminal
+- **API report:** `reports/api/index.html`, also saved on each GitHub Actions run
+- **E2E logs:** `logs/`
 - **Screenshots of failed tests:** `screenshots/`
-- **API report:** `reports/api/index.html`, also saved as the `api-report` artifact on each GitHub Actions run
 
 ## Decisions
 
-- Each E2E run creates a new wallet with a generated password, so there are no credentials to store. The password is masked when typed and never logged.
-- No Cucumber, because there is one test and no business team writing scenarios. No Docker, because WebdriverIO downloads the browsers itself, so Node is the only requirement.
-- E2E isn't in GitHub Actions, because each run creates a wallet on the live site. Only the API tests run there.
-- No retries, because a retry could hide a real bug.
-- Prices move between calls, so values from separate responses can differ by 0.25%. The worst gap I measured was 0.086%, with the stock market open. Values from one response must match to 6 decimals.
-- The net worth test sends its own GET calls instead of reusing the first test's, because the assignment also asks for independent tests.
-- The assignment lists no error codes, so a bad token can get 401 or 403, and bad input 400 or 422. A 429 fails these tests, because it means the rate limit answered and the check never ran.
-- Tests that only compare the API with itself can't see data that's wrong everywhere, so token amounts are compared with the blockchain and the EUR value with the European Central Bank's rate. If either service fails, the error names it, so it doesn't read as an API bug.
-- Each request waits up to 2 minutes, so a stall doesn't look like a wrong value. An answer over 10 seconds still fails the run, as a separate failure listing the slow URLs. The assignment sets no limit, so 10 seconds is our own bar. Normal answers took under 6.
-- There is a 2 second gap between tests, so runs stay under the rate limit without retrying. A 1 second gap still got blocked on the third run in a row.
+- **No stored passwords.** Each E2E run creates a new wallet with a generated password, so there's nothing to keep secret.
+- **No retries.** A retry could hide a real bug.
+- **No Docker.** It would be one more thing to install. WebdriverIO already downloads the browsers, so Node is all you need.
+- **E2E isn't in GitHub Actions.** UI tests on a live site can be flaky, and could turn CI red with nothing wrong. The API tests run there instead.
+- **A 0.25% limit between responses.** Prices move between calls. The biggest gap I measured was 0.086%.
+- **Two outside checks.** Token amounts are compared with the blockchain, and EUR with the European Central Bank rate, because the API can't confirm its own data.
+- **A 2 second gap between tests.** It keeps runs under the rate limit.
 
 ## Known issues
 
-**Chrome headless is blocked.** solflare.com answers Chrome's headless browser with a 403, so that script fails on the first screen. I didn't disguise the browser to get past it. On a real project, I'd ask the team for an approved way through, such as a secret header Cloudflare lets pass or an allowlisted IP for the test machines. You can see the block with curl, which returned 403 on 2 Nov 2026, while a normal Chrome user agent got a 200:
+Problems I ran into while building this, and what they mean when you run the tests.
 
-```bash
-curl -s -o /dev/null -w '%{http_code}\n' -A 'HeadlessChrome/156.0.0.0' https://solflare.com/onboard
-```
+- **Chrome headless is blocked.** solflare.com answers it with a 403, and I didn't disguise the browser to get past that. On a real project, I'd ask for an approved way through, like a secret header or an allowlisted IP address.
+- **The testnet balance never appears.** It stays a grey bar. See the [bug report](docs/bugs.md).
+- **The API can stall.** An answer over 10 seconds fails the run and lists the slow URLs. That means the API was slow, not that a value was wrong.
+- **Malformed JSON returns a 500.** It should be a 400, because the mistake is in the request. See the [bug report](docs/bugs.md).
 
-**Blank page in Chrome.** One Chrome run stopped on an empty first page. It didn't come back and the cause is unknown, so the test still fails if it happens. Re-run it to check.
+## What is checked and confirmed
 
-**The API can stall.** A run during a stall fails, listing the slow URLs. That means the API was slow, not that a value was wrong. See the [bug report](docs/bugs.md).
-
-**API rate limit.** Cloudflare answers with a 429 after too many requests. It seems tied to the IP address, so other traffic from the same connection counts too. If you see `returned 429`, wait about two minutes and run the tests again.
-
-## Test evidence
-
-Results on macOS, 2 and 3 Nov 2026.
-
-- **E2E:** 9 of 9 passed across Chrome, Firefox and Firefox headless, and on the final code it passed again in Chrome with a window and in Firefox headless.
-- **API checks broken on purpose:** I broke each check once, and the test failed on it each time.
-- **Realistic API bugs injected into recorded answers:** the tests caught them all except a wrong price on a single token, as listed under Not covered.
-- **API runs:** 8 of 8 passed with the stock market open. Back to back, 5 of 6 passed with no rate limit errors, and the 6th failed on a real stall, which is in the bug report.
-- **Stalls made on demand:** a request with no answer fails at 2 minutes and names the URL. A slow answer fails the run and lists the URL, and the values still get checked.
-
-## Differences from the assignment
-
-- The assignment has no step for Create new wallet, but the app needs it.
-- The assignment says "Main wallet". The app shows "Main Wallet".
-- The test adds checks the assignment doesn't ask for, such as a page reload after saving.
-
-## Not covered
-
-- Password rules and other negative E2E cases, because the assignment asks for one test.
-- Google sign-in, importing a wallet, and E2E on Windows or Linux.
-- Whether each token's price is right. Only USDC has an outside reference, at about $1, so a wrong price on one other token gets through. In a one-off check, all 8 priced tokens were within 0.9% of CoinGecko.
-- Whether the API's own auth rejects a missing token. Cloudflare answers first, so that test only proves the request is refused.
-- Inputs where nothing says what's right: empty `pubkeys`, GET tokens with no `network`, `general: false`, and well-formed UUID tokens that aren't version 4. All return 200 today.
-- API load, the exact rate limit, and currencies other than USD and EUR.
+- E2E passed in Chrome, Firefox and Firefox headless, on macOS.
+- API tests pass on macOS and in GitHub Actions on Linux.
+- I broke each API check on purpose, and the test failed each time.
+- I added realistic bugs to recorded API answers. The tests caught them all, except a wrong price on a single token.
