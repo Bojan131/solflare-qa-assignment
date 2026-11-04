@@ -46,4 +46,6 @@ Send POST balances for both addresses.
 
 A rejected request must not return any wallet data.
 
+API-05 and API-07 use outside services. If one doesn't answer, that check is skipped and the run shows it.
+
 \* API-13 is marked as an expected failure because the API answers with a 500 today, so it turns red once the bug is fixed. It's in [bugs.md](bugs.md).

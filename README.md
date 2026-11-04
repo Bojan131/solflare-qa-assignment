@@ -10,7 +10,7 @@ Tests for the Solflare wallet: one E2E test in WebdriverIO, and API tests in Vit
 
 ## Setup
 
-You need Node 24.22.2 and internet access. The browsers download on their own.
+You need Node 24.22.2 and internet access. The browsers download on their own. These commands use nvm, so without it, install that Node version yourself.
 
 ```bash
 nvm install
@@ -43,9 +43,9 @@ An API run takes about a minute and shows `1 expected fail`. That's API-13, a kn
 - **No stored passwords.** Each E2E run creates a new wallet with a generated password, so there's nothing to keep secret.
 - **No retries.** A retry could hide a real bug.
 - **No Docker.** It would be one more thing to install. WebdriverIO already downloads the browsers, so Node is all you need.
-- **E2E isn't in GitHub Actions.** UI tests on a live site can be flaky, and could turn CI red with nothing wrong. The API tests run there instead.
+- **E2E doesn't run on every push.** UI tests on a live site can be flaky, and could turn CI red with nothing wrong. It has a nightly workflow set for 00:00 UTC, turned off for now because this is a test project.
 - **A 0.25% limit between responses.** Prices move between calls. The biggest gap I measured was 0.086%.
-- **Two outside checks.** Token amounts are compared with the blockchain, and EUR with the European Central Bank rate, because the API can't confirm its own data.
+- **Two outside checks.** Token amounts are compared with the blockchain, and EUR with the European Central Bank rate, because the API can't confirm its own data. If one of those services is down, that check is skipped.
 - **A 2 second gap between tests.** It keeps runs under the rate limit.
 
 ## Known issues
