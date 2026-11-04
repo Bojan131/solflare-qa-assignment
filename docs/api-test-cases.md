@@ -2,7 +2,7 @@
 
 All tests run on production, https://wallet-api.solflare.com, with the two addresses from the assignment and a generated uuid4 as the token.
 
-Every request must also answer within 10 seconds, or the run fails. The assignment sets no limit, so that one is our own.
+Every request must also answer within 10 seconds, or the run fails. Normal answers take under 6 seconds, and a wallet that takes longer than 10 to show a balance feels broken to the person using it.
 
 ## From the assignment
 
@@ -42,8 +42,8 @@ Send POST balances for both addresses.
 | API-10 | Bad input: malformed address or pubkey, invalid network, no `1` prefix, no pubkeys, one bad pubkey of two, unsupported currency | Rejected with 400 or 422, or 404 for the address                                                         | High     |
 | API-11 | Devnet and testnet                                                                                                              | Values differ from mainnet                                                                               | Low      |
 | API-12 | The same address sent twice                                                                                                     | Net worth isn't doubled and still equals its rows                                                        | Medium   |
-| API-13 | Malformed JSON                                                                                                                  | Not a 500. Known bug                                                                                     | Medium   |
+| API-13 | Malformed JSON                                                                                                                  | Rejected with a 400                                                                                      | Medium   |
 
 A rejected request must not return any wallet data.
 
-API-13 is marked as an expected failure, so it turns red once the bug is fixed. It's in [bugs.md](bugs.md).
+API-13 is marked as an expected failure because the API answers with a 500 today, so it turns red once the bug is fixed. It's in [bugs.md](bugs.md).
