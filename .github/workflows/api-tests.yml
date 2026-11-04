@@ -1,4 +1,3 @@
-# API tests only. E2E tests stay out of CI because each run creates a wallet on the live site.
 name: API tests
 
 on:
