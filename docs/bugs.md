@@ -45,7 +45,7 @@ Both daytime times, at 10:06 and 12:52 UTC, a valid POST balances waited about a
 
 That wording comes from Redlock, a locking library, so my guess is the server waited for a lock and gave up. Either way it shouldn't be a 400, because the request was fine.
 
-I can't reproduce this on demand, and my tests sent a lot of requests that night, which may have played a part.
+I can't reproduce this on demand, and my tests sent a lot of requests that night, which may have played a part. The next night I sent one request a minute through the same hours, and all 120 answered within 4 seconds, so it may only happen under heavier traffic.
 
 ### 2. Malformed JSON returns a 500
 
