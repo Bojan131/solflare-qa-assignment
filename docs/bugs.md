@@ -37,7 +37,7 @@ Requests normally answer in under 6 seconds, but sometimes they take over a minu
 
 Even requests that should fail straight away, like one with a wrong token, were slow. Cloudflare's own responses stayed fast, so the delay looks to be behind it.
 
-Both daytime times, at 10:06 and 12:52 UTC, a valid POST balances waited about a minute and then returned this:
+Twice during the day, at 10:06 and 12:52 UTC, a valid POST balances waited about a minute and then returned this:
 
 ```json
 { "error": "The operation was unable to achieve a quorum during its retry window.", "status": 400 }

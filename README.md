@@ -6,7 +6,7 @@ WebdriverIO E2E test and Vitest API tests for the Solflare wallet.
 
 The E2E test creates a new wallet, turns on the 3rd and 4th wallets under Show or hide wallets, saves, and checks that the recovery phrase list holds the original wallet and those two, including after a page reload. The steps are in [docs/test-case.md](docs/test-case.md).
 
-The API tests check that portfolio totals and net worth add up on the live API, that holdings match the blockchain, and how bad requests are handled. The cases are in [docs/api-test-cases.md](docs/api-test-cases.md). They also run in GitHub Actions on every push to `main`.
+The API tests check that portfolio totals and net worth add up on the live API, that holdings match the blockchain, and how bad requests are handled. The cases are in [docs/api-test-cases.md](docs/api-test-cases.md). These tests also run in GitHub Actions on every push to `main`.
 
 The bugs I found are in [docs/bugs.md](docs/bugs.md).
 
@@ -57,7 +57,7 @@ An API run takes about a minute and shows `1 expected fail`. That's API-13, a kn
 
 ## Known issues
 
-**Chrome headless is blocked.** solflare.com answers Chrome's headless browser with a 403, so that script fails on the first screen, and I didn't disguise the browser to get past it. On a real project, I'd ask the team for an approved way through, such as a secret header Cloudflare lets pass or an allowlisted IP for the test machines, instead of disguising the browser. You can see it with curl, which returned 403 on 2 Nov 2026, while a normal Chrome user agent got a 200:
+**Chrome headless is blocked.** solflare.com answers Chrome's headless browser with a 403, so that script fails on the first screen. I didn't disguise the browser to get past it. On a real project, I'd ask the team for an approved way through, such as a secret header Cloudflare lets pass or an allowlisted IP for the test machines. You can see the block with curl, which returned 403 on 2 Nov 2026, while a normal Chrome user agent got a 200:
 
 ```bash
 curl -s -o /dev/null -w '%{http_code}\n' -A 'HeadlessChrome/156.0.0.0' https://solflare.com/onboard
@@ -74,8 +74,8 @@ curl -s -o /dev/null -w '%{http_code}\n' -A 'HeadlessChrome/156.0.0.0' https://s
 Results on macOS, 2 and 3 Nov 2026.
 
 - **E2E:** 9 of 9 passed across Chrome, Firefox and Firefox headless, and on the final code it passed again in Chrome with a window and in Firefox headless.
-- **API checks broken on purpose:** 64 of 64 failed the test on the broken check.
-- **Realistic API bugs injected into recorded answers:** 49 of 51 caught. The 2 misses are a wrong price on a single token, as listed under Not covered. The tool for this isn't in the repo, to keep it minimal.
+- **API checks broken on purpose:** I broke each check once, and the test failed on it each time.
+- **Realistic API bugs injected into recorded answers:** the tests caught them all except a wrong price on a single token, as listed under Not covered.
 - **API runs:** 8 of 8 passed with the stock market open. Back to back, 5 of 6 passed with no rate limit errors, and the 6th failed on a real stall, which is in the bug report.
 - **Stalls made on demand:** a request with no answer fails at 2 minutes and names the URL. A slow answer fails the run and lists the URL, and the values still get checked.
 
