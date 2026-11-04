@@ -59,7 +59,7 @@ Problems I ran into while building this, and what they mean when you run the tes
 
 ## What is checked and confirmed
 
-- E2E passed in Chrome, Firefox and Firefox headless, on macOS.
+- E2E passed in Chrome, Firefox and Firefox headless on macOS, and in Firefox headless in GitHub Actions on Linux.
 - API tests pass on macOS and in GitHub Actions on Linux.
 - I broke each API check on purpose, and the test failed each time.
 - I added realistic bugs to recorded API answers, and the tests caught all of them.
