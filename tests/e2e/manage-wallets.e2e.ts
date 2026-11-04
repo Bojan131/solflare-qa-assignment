@@ -16,7 +16,7 @@ const FOURTH_WALLET = 3;
 // Checks the list holds exactly these wallets. Counting rows alone would pass
 // with the wrong wallets, so it looks for each address too.
 async function expectSavedWallets(addresses: string[]) {
-  await expect(walletManagementPage.walletRows).toBeElementsArrayOfSize(3);
+  await expect(walletManagementPage.walletRows).toBeElementsArrayOfSize(addresses.length);
   for (const address of addresses) {
     await expect(walletManagementPage.walletRow(address)).toBeDisplayed();
   }
