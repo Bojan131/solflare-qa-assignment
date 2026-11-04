@@ -9,7 +9,7 @@ const AUTH_HEADER = `Bearer ${randomUUID()}`;
 const PRICE_DRIFT_SHARE = 0.0025;
 // The API sometimes stalls, and the slowest answer measured took 103 seconds
 const REQUEST_TIMEOUT_MS = 120000;
-// The assignment sets no limit, so this is our own bar. Normal answers took under 6 seconds.
+// Normal answers take under 6 seconds, and a longer wait than this feels broken to the user
 const SLOW_REQUEST_MS = 10000;
 
 export const ADDRESSES = [
