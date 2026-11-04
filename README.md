@@ -54,7 +54,7 @@ Problems I ran into while building this, and what they mean when you run the tes
 
 - **Chrome headless is blocked.** solflare.com answers it with a 403, and I didn't disguise the browser to get past that. On a real project, I'd ask for an approved way through, like a secret header or an allowlisted IP address.
 - **The testnet balance never appears.** It stays a grey bar. See the [bug report](docs/bugs.md).
-- **The API can stall.** An answer over 10 seconds fails the run and lists the slow URLs. That means the API was slow, not that a value was wrong.
+- **The API can stall.** Requests sometimes take over a minute, and a valid request twice got a 400 lock error. A run that hits this fails. It's explained in detail in [docs/bugs.md](docs/bugs.md).
 - **Malformed JSON returns a 500.** It should be a 400, because the mistake is in the request. See the [bug report](docs/bugs.md).
 
 ## What is checked and confirmed
@@ -62,4 +62,4 @@ Problems I ran into while building this, and what they mean when you run the tes
 - E2E passed in Chrome, Firefox and Firefox headless, on macOS.
 - API tests pass on macOS and in GitHub Actions on Linux.
 - I broke each API check on purpose, and the test failed each time.
-- I added realistic bugs to recorded API answers. The tests caught them all, except a wrong price on a single token.
+- I added realistic bugs to recorded API answers, and the tests caught all of them.
