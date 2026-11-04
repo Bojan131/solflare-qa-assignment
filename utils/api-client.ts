@@ -33,7 +33,7 @@ export interface Token {
   price?: { price: number; change: number };
 }
 
-export interface TokensResponse {
+interface TokensResponse {
   tokens: Token[];
   value: { total: number; change: number; percentage: number };
   solValue: { total: number };
@@ -42,7 +42,7 @@ export interface TokensResponse {
   errors: unknown[];
 }
 
-export interface BalancesResponse {
+interface BalancesResponse {
   netWorth: number;
   netWorthChange: number;
   data: { publicKey: string; value: number }[];

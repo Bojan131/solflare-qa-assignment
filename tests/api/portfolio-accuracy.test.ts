@@ -43,7 +43,11 @@ describe('Extra: portfolio accuracy', () => {
           symbol: expect.any(String),
           totalUiAmount: expect.any(Number),
           isStock: expect.any(Boolean),
+          isStablecoin: expect.any(Boolean),
+          verified: expect.any(Boolean),
         });
+        // The checks below depend on these fields, so losing one must not switch them off
+        expect(token, token.symbol).toHaveProperty('category');
         expect(token.totalUiAmount, token.symbol).toBeGreaterThanOrEqual(0);
         // Unverified tokens can have no price, but a verified one would drop out of every total
         if (token.verified) expect(token.price?.price, `${token.symbol} price`).toBeGreaterThan(0);
@@ -62,12 +66,13 @@ describe('Extra: portfolio accuracy', () => {
   });
 
   // The blockchain is the real answer for what a wallet holds, so this catches a wrong amount or a
-  // missing token even when every endpoint agrees on it.
-  it('API-05: holdings match the blockchain for both addresses', async () => {
+  // missing token even when every endpoint agrees on it. An outage there says nothing about Solflare,
+  // so it skips the test.
+  it('API-05: holdings match the blockchain for both addresses', async ({ skip }) => {
     for (const address of ADDRESSES) {
       const [{ tokens }, chainHoldings] = await Promise.all([
         getTokens(address),
-        getChainHoldings(address),
+        getChainHoldings(address).catch((error: Error) => skip(error.message)),
       ]);
       const apiHoldings: Record<string, number> = {};
       // Adds up instead of overwriting, so a token listed twice can't pass as one correct row
@@ -113,16 +118,18 @@ describe('Extra: portfolio accuracy', () => {
     );
   });
 
-  // The bank's rate is an outside check, because the API can't confirm its own rate
-  it('API-07: converts net worth to EUR at about the real rate', async () => {
-    const [usd, eur, eurPerUsd] = await Promise.all([
+  // The bank's rate is an outside check, because the API can't confirm its own rate. An outage there
+  // says nothing about Solflare, so it skips the rate check.
+  it('API-07: converts net worth to EUR at about the real rate', async ({ skip }) => {
+    const [usd, eur] = await Promise.all([
       getBalances(PUBKEYS),
       getBalances(PUBKEYS, { currency: 'eur' }),
-      getEurPerUsd(),
     ]);
-    const gap = Math.abs(eur.netWorth / usd.netWorth - eurPerUsd) / eurPerUsd;
 
     expect(eur.netWorth).toBeCloseTo(sumOfWallets(eur), SAME_RESPONSE_DECIMALS);
+
+    const eurPerUsd = await getEurPerUsd().catch((error: Error) => skip(error.message));
+    const gap = Math.abs(eur.netWorth / usd.netWorth - eurPerUsd) / eurPerUsd;
     expect(gap, `EUR ${eur.netWorth} vs USD ${usd.netWorth} at ${eurPerUsd}`).toBeLessThan(
       EUR_RATE_LIMIT,
     );
